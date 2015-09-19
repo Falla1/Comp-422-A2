@@ -1218,41 +1218,42 @@ extends GPProblem {
 
 				for(int i = 0  ; i < numInputVariables; i ++){
 					engine.put(variableNames[i], data[i][j]);
+
+
+					double value = 0;
+					String eq = ind.toStringNorm(0);
+
+					try {
+
+						eq = eq.replace("cosine", "Math.cos");
+						eq = eq.replace("sine", "Math.sin");
+						eq = eq.replace("tangent", "Math.tan");
+						eq = eq.replace("sqrt", "Math.sqrt");
+						eq = eq.replace("pow", "Math.pow");
+						eq = eq.replace("log", "Math.log");
+
+						eq = replacer(eq,"Math.cos");
+						eq = replacer(eq,"Math.sin");
+						eq = replacer(eq,"Math.tan");
+						eq = replacer(eq,"Math.sqrt");
+						eq = replacer(eq,"Math.pow");
+						eq = replacer(eq,"Math.log");
+
+						value = (double) engine.eval(eq);
+					} catch (ScriptException e) {
+						e.printStackTrace();
+					}
+
+					if(Double.isNaN(value)){
+						value = data[1][j] + 10;
+					}
+
+					if(value > data[1][j]){
+						error += value - data[1][j];
+					}else{
+						error += data[1][j] - value;
+					}
 				}
-
-				double value = 0;
-				String eq = ind.toStringNorm(0);
-				try {
-
-					eq = eq.replace("cosine", "Math.cos");
-					eq = eq.replace("sine", "Math.sin");
-					eq = eq.replace("tangent", "Math.tan");
-					eq = eq.replace("sqrt", "Math.sqrt");
-					eq = eq.replace("pow", "Math.pow");
-					eq = eq.replace("log", "Math.log");
-
-					eq = replacer(eq,"Math.cos");
-					eq = replacer(eq,"Math.sin");
-					eq = replacer(eq,"Math.tan");
-					eq = replacer(eq,"Math.sqrt");
-					eq = replacer(eq,"Math.pow");
-					eq = replacer(eq,"Math.log");
-
-					value = (double) engine.eval(eq);
-				} catch (ScriptException e) {
-					e.printStackTrace();
-				}
-
-				if(Double.isNaN(value)){
-					value = data[0][j] + 10;
-				}
-
-				if(value > data[0][j]){
-					error += value - data[0][j];
-				}else{
-					error += data[0][j] - value;
-				}
-
 
 			}
 
@@ -1276,12 +1277,21 @@ extends GPProblem {
 			if(String.valueOf(string.charAt(currentIndex)).equals("X")
 					|| NumberUtils.isNumber(String.valueOf(string.charAt(currentIndex)))){
 
-				currentIndex ++;
 				int number = currentIndex;
 				//Find the end of the value
-				while(NumberUtils.isNumber(String.valueOf(string.charAt(number)))
-						|| String.valueOf(string.charAt(number)).equals(".")){
-					number++;
+				boolean hit = false;
+
+				if(number != string.length()){
+					while(number != string.length() &&
+							(NumberUtils.isNumber(String.valueOf(string.charAt(number)))
+									|| String.valueOf(string.charAt(number)).equals("."))){
+						number++;
+						hit = true;
+					}
+
+					if(hit == false){
+						number ++;
+					}
 				}
 
 				//put brackets around it
