@@ -8,7 +8,9 @@ import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
+import org.neuroph.nnet.learning.MomentumBackpropagation;
 import org.neuroph.util.TransferFunctionType;
+import org.neuroph.util.random.RangeRandomizer;
 
 import Q2.Helpers.Data;
 import Q2.Helpers.Reader;
@@ -18,7 +20,7 @@ public class NNMethod {
 
 	public NNMethod(){
 
-		Reader r = new Reader("/vol/courses/comp422/datasets/digits/digits00");
+		Reader r = new Reader("/vol/courses/comp422/datasets/digits/digits05");
 
 		List<Data> points = r.readDataPoints();
 
@@ -36,11 +38,13 @@ public class NNMethod {
 		MultiLayerPerceptron myMlPerceptron = new MultiLayerPerceptron(TransferFunctionType.TANH, trainingSet.getInputSize(), 9,
 				trainingSet.getOutputSize());
 
-		BackPropagation bp = new BackPropagation();
+		MomentumBackpropagation bp = new MomentumBackpropagation();
 
-		bp.setMaxError(0.0001);
+		bp.setMaxError(0.0002);
 		bp.setMaxIterations(2000);
-		bp.setLearningRate(0.1);
+		bp.setLearningRate(0.2);
+
+		myMlPerceptron.randomizeWeights(new RangeRandomizer(-1,1));
 
 		myMlPerceptron.setLearningRule(bp);
 
