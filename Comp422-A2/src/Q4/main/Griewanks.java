@@ -10,7 +10,7 @@ public class Griewanks extends Problem {
 		setMinimization(true);
 		setMinDomain(-30);
 		setMaxDomain(30);
-		setMaxVelocity(6);
+		setMaxVelocity(10);
 	}
 
 	public double fitness(List<Double> position) {

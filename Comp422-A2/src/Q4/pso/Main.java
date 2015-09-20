@@ -28,8 +28,10 @@ public class Main {
 
 		Swarm s = new Swarm();
 
-		//s.setProblem(new Rosenbrock());
-		s.setProblem(new Griewanks());
+		//Problem type = new Rosenbrock();
+		Problem type = new Griewanks();
+
+		s.setProblem(type);
 
 		s.setTopology(new StarTopology());
 		//  s.setTopology(new RingTopology(4));
@@ -80,7 +82,7 @@ public class Main {
 				/**
 				 *  // get bestfitnes in each iterate
 				 */
-				
+
 			}//end all iterations
 
 			BestFitnessRuns[r] = Fitness_Runs_Iterations[r][number_of_iterations - 1];
@@ -104,9 +106,10 @@ public class Main {
 		System.out.println("Best result of " + number_of_runs + " runs is:" + Bestbest_fitness);
 		System.out.println("Average of best results of " + number_of_runs + " runs is:" + NewMath.Best_Mean_STD(BestFitnessRuns)[0]);
 		System.out.println("Standard Deviation of best results of " + number_of_runs + " runs is:" + NewMath.Best_Mean_STD(BestFitnessRuns)[1]);
-		
+
 		System.out.println(best_particle.getPosition());
-		
+		System.out.println("Value: " + type.fitness(best_particle.getPosition()));
+
 		AverageFitnessRuns = NewMath.AverageRunIterations(Fitness_Runs_Iterations);  // average best fitness in each iterate in all runs
 
 		/** Output the results to tex
