@@ -1,24 +1,25 @@
-package Q5.classifier;
+package Q6.Classification;
 
 import java.util.Random;
 
 import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
-public class DT {
+public class Naive {
 
 
-	private J48 classifier = new J48();
+	private NaiveBayes classifier = new NaiveBayes();
 	private Evaluation eval;
 
-	public DT(){
+	public Naive(){
 
 		Instances instances = null;
 		try {
-			DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q5/balance.arff");
-			//DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q5/wine.arff");
+			DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q6/sonar.arff");
+			//DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q6/wbcd.arff");
 			instances = source.getDataSet();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -42,7 +43,7 @@ public class DT {
 	}
 
 	public static void main(String args[]){
-		new DT();
+		new Naive();
 	}
 
 	public void trainClassifier(Instances trainingData){
@@ -65,12 +66,8 @@ public class DT {
 		} catch (Exception e) {
 			throw new Error(e);
 		}
-		String graph = null;
-		try {
-			graph = classifier.graph();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+
 		//Print all the information about the evaluation
 		String strSummary = eval.toSummaryString();
 		System.out.println(strSummary);

@@ -1203,6 +1203,98 @@ extends GPProblem {
 
 		public double computeRawFitness(final IGPProgram ind) {
 			double error = 0.0f;
+			Object[] noargs = new Object[0];
+			// Evaluate function for the input numbers
+			// --------------------------------------------
+			// double[] results  =  new double[numRows];
+			for (int j = 0; j < numRows; j++) {
+				// Provide the variable X with the input number.
+				// See method create(), declaration of "nodeSets" for where X is
+				// defined.
+				// -------------------------------------------------------------
+
+				// set all the input variables
+				int variableIndex = 0;
+				for (int i = 0; i < numInputVariables + 1; i++) {
+					if (i != outputVariable) {
+						variables[variableIndex].set(data[i][j]);
+						variableIndex++;
+					}
+				}
+				try {
+					double result = ind.execute_double(0, noargs);
+					// results[j] = result;
+
+					// Sum up the error between actual and expected result to get a defect
+					// rate.
+					// -------------------------------------------------------------------
+
+					// hakank: TODO: test with different metrics...
+					error += Math.abs(result - data[outputVariable][j]); // original
+					// error += Math.pow(Math.abs(result - data[outputVariable][j]),2);
+
+					// If the error is too high, stop evaluation and return worst error
+					// possible.
+					// ----------------------------------------------------------------
+					if (Double.isInfinite(error)) {
+						return Double.MAX_VALUE;
+					}
+				} catch (ArithmeticException ex) {
+					// This should not happen, some illegal operation was executed.
+					// ------------------------------------------------------------
+					System.out.println(ind);
+					throw ex;
+				}
+			}
+			/*
+	          // experimental
+	          ProgramChromosome chrom = ind.getChromosome(0);
+	          String program = chrom.toStringNorm(0);
+	          double length = program.length();
+			 */
+
+			// If the fitness is very close to 0.0 then we maybe bump it
+			// up to see alternative solutions.
+			// -------------------------------------------------------
+			if (error <= bumpValue && bumpPerfect) {
+				if (!foundPerfect) {
+					System.out.println("Found a perfect solution with err " + error +
+							"!. Bump up the values!");
+					foundPerfect = true;
+				}
+				ProgramChromosome chrom = ind.getChromosome(0);
+				String program = chrom.toStringNorm(0);
+				if (!foundSolutions.containsKey(program)) {
+					System.out.println("PROGRAM:" + program + " error: " + error);
+					foundSolutions.put(program, 1);
+				}
+				else {
+					// TODO: We may want to show the number of hits
+					// after the run...
+					foundSolutions.put(program, foundSolutions.get(program) + 1);
+				}
+				error = 0.1d;
+			}
+			// a simplistc version of length punishing
+			/*
+	          // too experimental
+	          if (punishLength) {
+	            return error + length;
+	          } else {
+	            return error;
+	          }
+			 */
+
+			if (scaleError > 0.0d) {
+				return error * scaleError;
+			}
+			else {
+				return error;
+			}
+		}
+
+		/*		public double computeRawFitness(final IGPProgram ind) {
+			double error = 0.0f;
 
 			ScriptEngineManager manager = new ScriptEngineManager();
 			ScriptEngine engine = manager.getEngineByName("js");
@@ -1225,12 +1317,22 @@ extends GPProblem {
 
 					try {
 
+						eq = eq.replace("arc_tangent", "Math.atan");
+						eq = eq.replace("arc_cosine", "Math.acos");
+						eq = eq.replace("arc_sine", "Math.asin");
 						eq = eq.replace("cosine", "Math.cos");
 						eq = eq.replace("sine", "Math.sin");
 						eq = eq.replace("tangent", "Math.tan");
 						eq = eq.replace("sqrt", "Math.sqrt");
 						eq = eq.replace("pow", "Math.pow");
 						eq = eq.replace("log", "Math.log");
+						eq = eq.replace("ceil", "Math.ceil");
+						eq = eq.replace("floor", "Math.floor");
+						eq = eq.replace("round", "Math.round");
+						eq = eq.replace("min", "Math.min");
+						eq = eq.replace("max", "Math.max");
+						eq = eq.replace("abs", "Math.abs");
+
 
 						eq = replacer(eq,"Math.cos");
 						eq = replacer(eq,"Math.sin");
@@ -1238,6 +1340,15 @@ extends GPProblem {
 						eq = replacer(eq,"Math.sqrt");
 						eq = replacer(eq,"Math.pow");
 						eq = replacer(eq,"Math.log");
+						eq = replacer(eq, "Math.atan");
+						eq = replacer(eq, "Math.acos");
+						eq = replacer(eq, "Math.asin");
+						eq = replacer(eq, "Math.ceil");
+						eq = replacer(eq, "Math.floor");
+						eq = replacer(eq, "Math.round");
+						eq = replacer(eq, "Math.min");
+						eq = replacer(eq, "Math.max");
+						eq = replacer(eq, "Math.abs");
 
 						value = (double) engine.eval(eq);
 					} catch (ScriptException e) {
@@ -1253,12 +1364,14 @@ extends GPProblem {
 					}else{
 						error += data[1][j] - value;
 					}
+
+					error += (value - data[1][j]) * (value - data[1][j]);
 				}
 
 			}
 
-			return error;
-		}
+			return error/numRows;
+		}*/
 	}
 
 	private static String replacer(String string, String search){

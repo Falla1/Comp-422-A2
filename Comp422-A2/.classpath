@@ -21,5 +21,6 @@
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/JGap/jgap_3.6.3_full/jgap-examples.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/JGap/jgap_3.6.3_full/jgap-tests.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/colt-1.2.0/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/chiSquaredAttributeEval1.0.4/chiSquaredAttributeEval.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

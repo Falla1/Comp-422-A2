@@ -1,89 +1,90 @@
-
 package Q5.classifier;
 
-import java.awt.BorderLayout;
-import java.io.File;
-import java.io.IOException;
 import java.util.Random;
 
-import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.evaluation.ThresholdCurve;
-import weka.core.Instance;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
-import weka.core.Utils;
-import weka.core.converters.CSVLoader;
-import weka.gui.visualize.PlotData2D;
-import weka.gui.visualize.ThresholdVisualizePanel;
+import weka.core.converters.ConverterUtils.DataSource;
 
 public class Naive {
 
-	Classifier bayes;
-	Instances training;
 
-	String dir;
-	/**
-	 * 0 = Face
-	 * 1 = Non-Face
-	 * @param dir
-	 */
-	public Naive(String dir){
-		this.dir = dir;
-		setup();
-		loadTrainingSet();
-		testSet();
-	}
+	private NaiveBayes classifier = new NaiveBayes();
+	private Evaluation eval;
 
-	private void testSet() {
+	public Naive(){
 
-		CSVLoader loader = new CSVLoader();
-		Instances test;
-
-		Evaluation eva;
-
+		Instances instances = null;
 		try {
-			loader.setSource(new File(dir + "/2.2/mit-cbcl-faces-balanced/test.csv"));
-			test = loader.getDataSet();
-			test.setClass(test.attribute("class"));
-
-			eva = new Evaluation(training);
-
-			eva.crossValidateModel(bayes, test, 10, new Random());
-
-			String strSummary = eva.toSummaryString();
-			System.out.println(strSummary);
-
-			try {
-				System.out.println(eva.toClassDetailsString());
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
+			DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q5/balance.arff");
+			//DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q5/wine.arff");
+			instances = source.getDataSet();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Error(e);
 		}
 
+		// Make the last attribute be the class
+		instances.setClassIndex(instances.numAttributes() - 1);
+
+		instances.randomize(new java.util.Random(0));
+
+		int trainSize = (int) Math.round(instances.numInstances() * .80);
+		int testSize = instances.numInstances() - trainSize;
+		Instances train = new Instances(instances, 0, trainSize);
+		Instances test = new Instances(instances, trainSize, testSize);
+
+		trainClassifier(train);
+
+		testClassifier(test);
 
 	}
 
-	private void setup() {
-		bayes = new NaiveBayes();
+	public static void main(String args[]){
+		new Naive();
 	}
 
-	private void loadTrainingSet(){
-		CSVLoader loader = new CSVLoader();
+	public void trainClassifier(Instances trainingData){
 
 		try {
-			loader.setSource(new File(dir + "2.2/mit-cbcl-faces-balanced/train.csv"));
-			training = loader.getDataSet();
-			training.setClass(training.attribute("class"));
-			bayes.buildClassifier(training);
+			classifier.buildClassifier(trainingData);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new Error(e);
+		}
+
+	}
+
+	public void testClassifier(Instances test) {
+
+		try {
+			//Evaluate the model with the test
+			eval = new Evaluation(test);
+			eval.crossValidateModel(classifier, test, 10, new Random());
+
+		} catch (Exception e) {
+			throw new Error(e);
+		}
+
+
+		//Print all the information about the evaluation
+		String strSummary = eval.toSummaryString();
+		System.out.println(strSummary);
+
+		try {
+			System.out.println(eval.toClassDetailsString());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
+		double[][] matrix = eval.confusionMatrix();
+
+		for(int i = 0 ; i < matrix.length ; i ++){
+			for(int j = 0 ; j < matrix[i].length ; j ++){
+				System.out.print(matrix[i][j] + " ");
+			}
+			System.out.println();
 		}
 
 	}
