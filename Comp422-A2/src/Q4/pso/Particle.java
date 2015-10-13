@@ -29,6 +29,13 @@ public class Particle {
     public Particle() {
     }
 
+
+    public Particle(Particle best_particle) {
+
+    	this._position = new ArrayList<Double>(best_particle.getPosition());
+
+    }
+
     public void setSize(int size) {
         _position.clear();
         _velocity.clear();
@@ -159,7 +166,7 @@ public class Particle {
             double v_i = getInertia() * getVelocity(i);
             v_i += getC1() * getR1().nextDouble() * (getPersonalPosition(i) - getPosition(i));
             v_i += getC2() * getR2().nextDouble() * (getNeighborhoodPosition(i) - getPosition(i));
-            
+
             setVelocity(i, v_i);
         }
     }
@@ -173,7 +180,7 @@ public class Particle {
             if (p_i < getMinPosition()){
                 p_i = getMinPosition();
             }
-            
+
             setPosition(i, p_i);
         }
     }

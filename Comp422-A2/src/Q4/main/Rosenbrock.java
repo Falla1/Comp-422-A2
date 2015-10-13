@@ -14,17 +14,17 @@ public class Rosenbrock extends Problem {
     }
 
     public double fitness(List<Double> position) {
-    	    	
-        double sum = 0.0;
+
+    	double sum = 0.0;
         double [] v = new double[position.size()];
         for (int i = 0; i < position.size(); i++) v[i] = position.get(i);
         for (int i = 0 ; i < (position.size()-1) ; i ++) {
-                double temp1 = (v[i] * v[i]) - v[i+1];
-                double temp2 = v[i] - 1.0;
+        	double temp1 =  ((v[i] * v[i]) - v[i+1]);
+        	double temp2 =  (v[i] - 1.0);
                 sum += (100.0 * temp1 * temp1) + (temp2 * temp2);
         }
 
         return sum;
     }
-    
+
 }

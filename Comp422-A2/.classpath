@@ -16,11 +16,12 @@
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/neuroph-2.9/neuroph-2.9/libs/javaml-0.1.7.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/neuroph-2.9/neuroph-2.9/libs/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/neuroph-2.9/neuroph-2.9/libs/slf4j-nop-1.7.6.jar"/>
-	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/neuroph-2.9/neuroph-2.9/libs/weka.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/JGap/jgap_3.6.3_full/jgap.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/JGap/jgap_3.6.3_full/jgap-examples.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/JGap/jgap_3.6.3_full/jgap-tests.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/colt-1.2.0/colt-1.2.0.jar"/>
 	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/chiSquaredAttributeEval1.0.4/chiSquaredAttributeEval.jar"/>
+	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/weka-3-6-13/weka-3-6-13/weka.jar"/>
+	<classpathentry kind="lib" path="/am/state-opera/home1/shawmarc/Desktop/2015/Comp422/A2/commons-math3-3.5/commons-math3-3.5/commons-math3-3.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

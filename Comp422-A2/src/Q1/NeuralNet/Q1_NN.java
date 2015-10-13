@@ -9,22 +9,27 @@ import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.util.TransferFunctionType;
 
-/**
- * This sample shows how to create, train, save and load simple Multi Layer Perceptron
- */
+
+
+//WAS NOT USED ---------- I USED BPNN PACKAGE
+
+
+//////!!!! Read above!!!!!!!!!!////////
+
+
 public class Q1_NN {
 
 	public static void main(String[] args) {
 
 		// create training set (logical XOR function)
-		DataSet trainingSet = new DataSet(2, 1);
-		trainingSet.addRow(new DataSetRow(new double[]{0, 0}, new double[]{0}));
-		trainingSet.addRow(new DataSetRow(new double[]{0, 1}, new double[]{1}));
-		trainingSet.addRow(new DataSetRow(new double[]{1, 0}, new double[]{1}));
-		trainingSet.addRow(new DataSetRow(new double[]{1, 1}, new double[]{0}));
+		DataSet trainingSet = new DataSet(2, 2);
+		trainingSet.addRow(new DataSetRow(new double[]{0, 0}, new double[]{0,1}));
+		trainingSet.addRow(new DataSetRow(new double[]{0, 1}, new double[]{1,0}));
+		trainingSet.addRow(new DataSetRow(new double[]{1, 0}, new double[]{1,0}));
+		trainingSet.addRow(new DataSetRow(new double[]{1, 1}, new double[]{0,1}));
 
 		// create multi layer perceptron
-		MultiLayerPerceptron myMlPerceptron = new MultiLayerPerceptron(TransferFunctionType.TANH, 2, 3, 1);
+		MultiLayerPerceptron myMlPerceptron = new MultiLayerPerceptron(TransferFunctionType.TANH, 2, 2, 2);
 
 		BackPropagation bp = new BackPropagation();
 

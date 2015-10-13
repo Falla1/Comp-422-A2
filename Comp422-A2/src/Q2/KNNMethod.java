@@ -15,8 +15,8 @@ import weka.core.Instances;
 
 public class KNNMethod {
 
-	public KNNMethod(){
-		Scanner datafile = readDataFile("/vol/courses/comp422/datasets/digits/digits05");
+	public KNNMethod(String file){
+		Scanner datafile = readDataFile(file);
 
 		File tempTraining = new File("tempTraining.txt");
 		File tempTest = new File("tempTest.txt");
@@ -40,7 +40,7 @@ public class KNNMethod {
 			dataTest = new Instances(tmpTestData);
 			dataTest.setClassIndex(dataTest.numAttributes() - 1);
 
-			IBk ibk = new IBk(3);
+			IBk ibk = new IBk(2);
 
 			ibk.buildClassifier(dataTrain);
 
@@ -114,7 +114,8 @@ public class KNNMethod {
 
 		while(sc.hasNext()){
 
-			if(i > 499){
+
+			if(i < 500){
 				pwTrain.println(sc.nextLine());
 				pwTrain.flush();
 			}
@@ -122,6 +123,7 @@ public class KNNMethod {
 				pwTest.println(sc.nextLine());
 				pwTest.flush();
 			}
+
 			i++;
 		}
 
@@ -155,7 +157,4 @@ public class KNNMethod {
 		return inputReader;
 	}
 
-	public static void main(String[] args) throws Exception {
-		new KNNMethod();
-	}
 }

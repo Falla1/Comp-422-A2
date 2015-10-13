@@ -1225,8 +1225,8 @@ public class Q1_GP
           // -------------------------------------------------------------------
 
           // hakank: TODO: test with different metrics...
-          error += Math.abs(result - data[outputVariable][j]); // original
-          // error += Math.pow(Math.abs(result - data[outputVariable][j]),2);
+          //error += Math.abs(result - data[outputVariable][j]); // original
+          error += Math.pow(Math.abs(result - data[outputVariable][j]),2);
 
           // If the error is too high, stop evaluation and return worst error
           // possible.
@@ -1281,10 +1281,10 @@ public class Q1_GP
        */
 
       if (scaleError > 0.0d) {
-        return error * scaleError;
+        return (error/numRows) * scaleError;
       }
       else {
-        return error;
+        return (error/numRows);
       }
     }
   }

@@ -18,9 +18,9 @@ import Q2.Helpers.Reader;
 public class NNMethod {
 
 
-	public NNMethod(){
+	public NNMethod(String file){
 
-		Reader r = new Reader("/vol/courses/comp422/datasets/digits/digits05");
+		Reader r = new Reader(file);
 
 		List<Data> points = r.readDataPoints();
 
@@ -35,8 +35,8 @@ public class NNMethod {
 
 	public void execute(DataSet trainingSet, DataSet testSet){
 
-		MultiLayerPerceptron myMlPerceptron = new MultiLayerPerceptron(TransferFunctionType.TANH, trainingSet.getInputSize(), 9,
-				trainingSet.getOutputSize());
+		MultiLayerPerceptron myMlPerceptron = new MultiLayerPerceptron(TransferFunctionType.GAUSSIAN, 49, 9,5,
+				10);
 
 		MomentumBackpropagation bp = new MomentumBackpropagation();
 
@@ -107,10 +107,6 @@ public class NNMethod {
 	}
 
 
-	public static void main(String args[]){
-		new NNMethod();
-
-	}
 
 
 }

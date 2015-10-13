@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import Q6.Classification.Naive;
 import weka.attributeSelection.ChiSquaredAttributeEval;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.core.Instances;
@@ -12,11 +13,13 @@ import weka.core.converters.ConverterUtils.DataSource;
 
 public class InfoGain {
 
+	private int n = 9;
 
-	public InfoGain(){
+	public InfoGain(String file, int k){
 		Instances instances = null;
+		n = k;
 		try {
-			DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q6/sonar.arff");
+			DataSource source = new DataSource(file);
 			//DataSource source = new DataSource("/am/state-opera/home1/shawmarc/git/Comp-422-A2/Comp-422-A2/Comp422-A2/src/Q6/wbcd.arff");
 			instances = source.getDataSet();
 		} catch (Exception e) {
@@ -27,14 +30,23 @@ public class InfoGain {
 		// Make the last attribute be the class
 		instances.setClassIndex(instances.numAttributes() - 1);
 
+		instances.randomize(new java.util.Random(1));
+
+		int trainSize = (int) Math.round(instances.numInstances() * .8);
+		int testSize = instances.numInstances() - trainSize;
+
+		Instances train = new Instances(instances, 0, trainSize);
+		Instances test = new Instances(instances, trainSize, testSize);
+
+
 		InfoGainAttributeEval chi = new InfoGainAttributeEval();
 
 		List<Holder> results = new ArrayList<Holder>();
 
 		try {
-			chi.buildEvaluator(instances);
+			chi.buildEvaluator(train);
 
-			for(int i = 0 ; i < instances.numAttributes(); i ++){
+			for(int i = 0 ; i < train.numAttributes(); i ++){
 				results.add(new Holder(i,chi.evaluateAttribute(i)));
 			}
 
@@ -47,12 +59,32 @@ public class InfoGain {
 			@Override
 			public int compare(Holder o1, Holder o2) {
 				// TODO Auto-generated method stub
-				return Double.compare(o1.value, o2.value);
+				return Double.compare(o2.value, o1.value);
 			}
 
 		});
 
 		System.out.println(results);
+
+		List<Integer> toKeep = new ArrayList<Integer>();
+
+		for(int i = 0 ; i < n ; i++ ) {
+			toKeep.add(results.get(i).attributeNumber + 1);
+		}
+
+		toKeep.add(train.numAttributes());
+
+		StringBuilder removeColumns = new StringBuilder();
+
+		for(int i = 0 ; i < train.numAttributes() ; i ++){
+			if(!toKeep.contains(i + 1)){
+				removeColumns.append(i + 1);
+				removeColumns.append(",");
+			}
+		}
+
+		//TODO NOTE>>>><<<<< The larger the value, THE BETTER IT IS !! ? !?!????
+		new Naive(removeColumns.toString().substring(0, removeColumns.length() - 1),test);
 
 	}
 
@@ -97,8 +129,5 @@ public class InfoGain {
 		}
 	}
 
-	public static void main(String args[]){
-		new InfoGain();
-	}
 
 }

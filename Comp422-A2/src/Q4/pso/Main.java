@@ -22,19 +22,25 @@ public class Main {
 	public static void main(String[] args) {
 
 		int number_of_particles = 50;
-		int number_of_iterations = 500;
-		int number_of_runs = 10;
+		int number_of_iterations = 2500;
+		int number_of_runs = 30;
 		double c1 = 1.49618, c2 = 1.49618;
 
 		Swarm s = new Swarm();
 
-		//Problem type = new Rosenbrock();
-		Problem type = new Griewanks();
+		Problem type = null;
+
+		if(args[0].equals("rosen")){
+			type = new Rosenbrock();
+		}
+		else{
+			type = new Griewanks();
+		}
 
 		s.setProblem(type);
 
-		s.setTopology(new StarTopology());
-		//  s.setTopology(new RingTopology(4));
+		//s.setTopology(new StarTopology());
+		s.setTopology(new RingTopology(5));
 
 		s.setVelocityClamp(new BasicVelocityClamp());
 
@@ -58,6 +64,8 @@ public class Main {
 		double BestFitnessRuns[] = new double[number_of_runs];    // final get bestfitnes in each run
 		/** start PSO
 		 */
+		Particle bestParticles [] = new Particle[number_of_iterations * number_of_runs];
+
 		Particle best_particle = null;
 		for (int r = 0; r < number_of_runs; ++r) {
 
@@ -78,6 +86,7 @@ public class Main {
 					}
 				}
 				Fitness_Runs_Iterations[r][i] = best_fitness;
+				bestParticles[r] = new Particle(best_particle);
 				// BestFitnessIterations[i] = best_fitness;
 				/**
 				 *  // get bestfitnes in each iterate
@@ -85,7 +94,20 @@ public class Main {
 
 			}//end all iterations
 
-			BestFitnessRuns[r] = Fitness_Runs_Iterations[r][number_of_iterations - 1];
+			double Bestbest_fitness = s.getProblem().getWorstFitness();
+
+			for (int i = 0;i < Fitness_Runs_Iterations[r].length - 1 ; i++) {
+
+				if (s.getProblem().isBetter(Fitness_Runs_Iterations[r][i], Bestbest_fitness)) {
+
+					Bestbest_fitness = Fitness_Runs_Iterations[r][i];
+					// best_particle = s.getParticle(j);
+				}
+
+
+			}
+			BestFitnessRuns[r] = Bestbest_fitness;
+
 			/**
 			 *  // get bestfitnes in each run
 			 */
@@ -95,20 +117,36 @@ public class Main {
 		// get bestfitnes from final bestfitnes in all runs
 		double Bestbest_fitness = s.getProblem().getWorstFitness();
 		int bestrun = 0;
-		for (int r = 0; r < number_of_runs; ++r) {
+
+		best_particle = bestParticles[0];
+		double best_particle_fitness = type.fitness(best_particle.getPosition());
+
+		for (int r = 0; r < number_of_runs; r++) {
 			if (s.getProblem().isBetter(BestFitnessRuns[r], Bestbest_fitness)) {
 				bestrun = r;
 				Bestbest_fitness = BestFitnessRuns[bestrun];
 				// best_particle = s.getParticle(j);
 			}
+
+
 		}
+
+		for(int r = 0; r < bestParticles.length -1 ; r ++){
+
+			if(bestParticles[r] != null
+					&& type.fitness(bestParticles[r].getPosition()) < best_particle_fitness){
+				best_particle = bestParticles[r];
+				best_particle_fitness = type.fitness(bestParticles[r].getPosition());
+			}
+		}
+
 		System.out.println(bestrun);
-		System.out.println("Best result of " + number_of_runs + " runs is:" + Bestbest_fitness);
-		System.out.println("Average of best results of " + number_of_runs + " runs is:" + NewMath.Best_Mean_STD(BestFitnessRuns)[0]);
-		System.out.println("Standard Deviation of best results of " + number_of_runs + " runs is:" + NewMath.Best_Mean_STD(BestFitnessRuns)[1]);
+		System.out.println("Best:" + Bestbest_fitness);
+		System.out.println("Average:" + NewMath.Best_Mean_STD(BestFitnessRuns)[0]);
+		System.out.println("Standard Deviation:" + NewMath.Best_Mean_STD(BestFitnessRuns)[1]);
 
 		System.out.println(best_particle.getPosition());
-		System.out.println("Value: " + type.fitness(best_particle.getPosition()));
+		System.out.println("Value: " + best_particle_fitness);
 
 		AverageFitnessRuns = NewMath.AverageRunIterations(Fitness_Runs_Iterations);  // average best fitness in each iterate in all runs
 

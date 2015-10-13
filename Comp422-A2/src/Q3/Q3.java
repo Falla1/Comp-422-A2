@@ -10,16 +10,16 @@
 package Q3;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -1185,7 +1185,61 @@ extends GPProblem {
 				System.out.println(p + " (" + similiar.get(p) + ")");
 			}
 		}
+
+		testFittest(fittest);
+
 		System.exit(0);
+	}
+
+	public static void testFittest(IGPProgram ind) {
+
+		double error = 0.0f;
+		Object[] noargs = new Object[0];
+
+		Scanner sc = null;
+		try {
+			sc = new Scanner(new File("tmpData"));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		List<PlaceHolderNumber> outputs = new ArrayList<PlaceHolderNumber>();
+
+		SummaryStatistics stats = new SummaryStatistics();
+
+		while(sc.hasNext()){
+
+			String[] line = sc.nextLine().split("\t");
+
+			outputs.add(new PlaceHolderNumber(Double.valueOf(line[0]),Double.valueOf(line[1])));
+
+		}
+
+		for (int j = 0; j < outputs.size(); j++) {
+
+			int variableIndex = 0;
+			for (int i = 0; i < numInputVariables + 1; i++) {
+				if (i != outputVariable) {
+					variables[variableIndex].set(outputs.get(j).X);
+					variableIndex++;
+				}
+			}
+			try {
+				double result = ind.execute_double(0, noargs);
+
+				stats.addValue((Math.abs(result - outputs.get(j).value)));
+
+				System.out.println("Input: " + outputs.get(j).X  + " Output : " + result + " Expected: " + outputs.get(j).value + " Error: " + (Math.abs(result - outputs.get(j).value)) );
+
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+
+		System.out.println(stats.toString());
+
 	}
 
 	/**
@@ -1230,8 +1284,8 @@ extends GPProblem {
 					// -------------------------------------------------------------------
 
 					// hakank: TODO: test with different metrics...
-					error += Math.abs(result - data[outputVariable][j]); // original
-					// error += Math.pow(Math.abs(result - data[outputVariable][j]),2);
+					//error += Math.abs(result - data[outputVariable][j]); // original
+					error += Math.abs(log(Math.pow(Math.abs(result - data[outputVariable][j]),2) + 1,100));
 
 					// If the error is too high, stop evaluation and return worst error
 					// possible.
@@ -1285,139 +1339,21 @@ extends GPProblem {
 	          }
 			 */
 
-			if (scaleError > 0.0d) {
-				return error * scaleError;
-			}
-			else {
-				return error;
-			}
+
+			return ((error/numRows));
+
 		}
 
-		/*		public double computeRawFitness(final IGPProgram ind) {
-			double error = 0.0f;
-
-			ScriptEngineManager manager = new ScriptEngineManager();
-			ScriptEngine engine = manager.getEngineByName("js");
-			// Evaluate function for the input numbers
-			// --------------------------------------------
-			// double[] results  =  new double[numRows];
-			for (int j = 0; j < numRows; j++) {
-				// Provide the variable X with the input number.
-				// See method create(), declaration of "nodeSets" for where X is
-				// defined.
-				// -------------------------------------------------------------
-
-
-				for(int i = 0  ; i < numInputVariables; i ++){
-					engine.put(variableNames[i], data[i][j]);
-
-
-					double value = 0;
-					String eq = ind.toStringNorm(0);
-
-					try {
-
-						eq = eq.replace("arc_tangent", "Math.atan");
-						eq = eq.replace("arc_cosine", "Math.acos");
-						eq = eq.replace("arc_sine", "Math.asin");
-						eq = eq.replace("cosine", "Math.cos");
-						eq = eq.replace("sine", "Math.sin");
-						eq = eq.replace("tangent", "Math.tan");
-						eq = eq.replace("sqrt", "Math.sqrt");
-						eq = eq.replace("pow", "Math.pow");
-						eq = eq.replace("log", "Math.log");
-						eq = eq.replace("ceil", "Math.ceil");
-						eq = eq.replace("floor", "Math.floor");
-						eq = eq.replace("round", "Math.round");
-						eq = eq.replace("min", "Math.min");
-						eq = eq.replace("max", "Math.max");
-						eq = eq.replace("abs", "Math.abs");
-
-
-						eq = replacer(eq,"Math.cos");
-						eq = replacer(eq,"Math.sin");
-						eq = replacer(eq,"Math.tan");
-						eq = replacer(eq,"Math.sqrt");
-						eq = replacer(eq,"Math.pow");
-						eq = replacer(eq,"Math.log");
-						eq = replacer(eq, "Math.atan");
-						eq = replacer(eq, "Math.acos");
-						eq = replacer(eq, "Math.asin");
-						eq = replacer(eq, "Math.ceil");
-						eq = replacer(eq, "Math.floor");
-						eq = replacer(eq, "Math.round");
-						eq = replacer(eq, "Math.min");
-						eq = replacer(eq, "Math.max");
-						eq = replacer(eq, "Math.abs");
-
-						value = (double) engine.eval(eq);
-					} catch (ScriptException e) {
-						e.printStackTrace();
-					}
-
-					if(Double.isNaN(value)){
-						value = data[1][j] + 10;
-					}
-
-					if(value > data[1][j]){
-						error += value - data[1][j];
-					}else{
-						error += data[1][j] - value;
-					}
-
-					error += (value - data[1][j]) * (value - data[1][j]);
-				}
-
-			}
-
-			return error/numRows;
-		}*/
 	}
 
-	private static String replacer(String string, String search){
+	public static double logb( double a, double b )
+	{
+	return Math.log(a) / Math.log(b);
+	}
 
-		int currentIndex = string.indexOf(search, 0);
-
-		while(currentIndex != -1){
-
-			currentIndex += search.length();
-
-			//find if the next character is number or X.
-			while(String.valueOf(string.charAt(currentIndex)).equals(" ")){
-				currentIndex++;
-			}
-
-			if(String.valueOf(string.charAt(currentIndex)).equals("X")
-					|| NumberUtils.isNumber(String.valueOf(string.charAt(currentIndex)))){
-
-				int number = currentIndex;
-				//Find the end of the value
-				boolean hit = false;
-
-				if(number != string.length()){
-					while(number != string.length() &&
-							(NumberUtils.isNumber(String.valueOf(string.charAt(number)))
-									|| String.valueOf(string.charAt(number)).equals("."))){
-						number++;
-						hit = true;
-					}
-
-					if(hit == false){
-						number ++;
-					}
-				}
-
-				//put brackets around it
-				string = string.substring(0, currentIndex - 1) + "(" +
-						string.substring(currentIndex, number) + ")" + string.substring(number, string.length());
-
-			}
-
-			currentIndex = string.indexOf(search, currentIndex);
-
-		}
-
-		return string;
+	public static double log( double a , double b)
+	{
+	return logb(a,b);
 	}
 
 	/**

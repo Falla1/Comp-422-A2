@@ -15,8 +15,8 @@ public class Griewanks extends Problem {
 
 	public double fitness(List<Double> position) {
 
-        double sum = 0.0;
-        double product = 1.0;
+		double sum = 0.0;
+		double product = 1.0;
 
         for (int i = 0 ; i < position.size() ; i ++) {
                 sum += ((position.get(i) * position.get(i)) / 4000.0);
