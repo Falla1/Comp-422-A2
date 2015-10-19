@@ -1,1 +1,1 @@
-# Comp-422-A2
+COMP422 (Data mining course) - Project 2. This project includes: Genetic Programming vs Neural Networks/KNN, Naive Bayes/C4.5 Decision Trees, Particle Swarm Optimization (PSO), and Feature Selection & Feature Construction.
